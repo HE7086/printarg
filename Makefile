@@ -14,6 +14,7 @@ all: printarg
 printarg: $(OBJECTS)
 $(OBJECTS): %o: %cpp
 
+.PHONY: install
 install: printarg
 	install -Dm755 $^ $(PREFIX)/bin/$^
 	ln -sf $^ $(PREFIX)/bin/$^_hex
