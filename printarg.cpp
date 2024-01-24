@@ -13,7 +13,13 @@
 #define print (fmt::print)
 #endif
 
-int main(int argc, char *const *const argv) {
+[[gnu::always_inline]]
+inline bool has_env(char const *const name) {
+    const char* env = std::getenv(name);
+    return env != nullptr && std::string_view{env} != "0";
+}
+
+int main(int argc, char** argv) {
     if (argc == 1) {
         println(stderr, "---- NO ARGS ----");
         return 0;
@@ -21,7 +27,7 @@ int main(int argc, char *const *const argv) {
 
     bool hex = false;
     if (std::string_view{argv[0]}.ends_with("printarg_hex")
-        || std::getenv("PRINTARG_HEX") != nullptr
+        || has_env("PRINTARG_HEX")
     ) {
         hex = true;
         println(stderr, "---- PRINTARG HEX ----");
@@ -32,17 +38,14 @@ int main(int argc, char *const *const argv) {
         | std::views::enumerate
         | std::views::drop(1)
     ) {
-        if (!hex) {
+        if (!hex || arg.empty()) {
             println("{}:\t{:?}", index, arg);
-            return 0;
+            continue;
         }
 
-        print("{}:\t", index);
-        if (!arg.empty()) {
-            print("{:X}", arg.front());
-            for (auto c : arg | std::views::drop(1)) {
-                print(" {:X}", c);
-            }
+        print("{}:\t{:X}", index, arg.front());
+        for (auto c : arg | std::views::drop(1)) {
+            print(" {:X}", c);
         }
         println("");
     }
