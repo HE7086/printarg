@@ -16,6 +16,7 @@ $(OBJECTS): %o: %cpp
 
 install: printarg
 	install -Dm755 $^ $(PREFIX)/bin/$^
+	ln -sf $^ $(PREFIX)/bin/$^_hex
 
 .PHONY: clean
 clean:
