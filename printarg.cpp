@@ -3,15 +3,8 @@
 #include <span>
 #include <string_view>
 
-#ifdef __cpp_lib_print
-#include <print>
-#define println (std::println)
-#define print (std::print)
-#else
 #include <fmt/core.h>
-#define println (fmt::println)
-#define print (fmt::print)
-#endif
+#include <fmt/ranges.h>
 
 [[gnu::always_inline]]
 inline bool has_env(char const *const name) {
@@ -21,7 +14,7 @@ inline bool has_env(char const *const name) {
 
 int main(int argc, char** argv) {
     if (argc == 1) {
-        println(stderr, "---- NO ARGS ----");
+        fmt::println(stderr, "---- NO ARGS ----");
         return 0;
     }
 
@@ -30,7 +23,7 @@ int main(int argc, char** argv) {
         || has_env("PRINTARG_HEX")
     ) {
         hex = true;
-        println(stderr, "---- PRINTARG HEX ----");
+        fmt::println(stderr, "---- PRINTARG HEX ----");
     }
 
     for (auto [index, arg] : std::span{argv, argv + argc}
@@ -38,15 +31,11 @@ int main(int argc, char** argv) {
         | std::views::enumerate
         | std::views::drop(1)
     ) {
-        if (!hex || arg.empty()) {
-            println("{}:\t{:?}", index, arg);
+        if (!hex) {
+            fmt::println("{}:\t{:?}", index, arg);
             continue;
         }
 
-        print("{}:\t{:X}", index, arg.front());
-        for (auto c : arg | std::views::drop(1)) {
-            print(" {:X}", c);
-        }
-        println("");
+        fmt::println("{}:\t{:X}", index, fmt::join(arg, " "));
     }
 }
