@@ -1,22 +1,22 @@
-CXX ?= g++
-CXXFLAGS ?= -std=c++23 -march=x86-64-v3 -O2 -flto -ffat-lto-objects -s \
-			-fPIC -fstack-clash-protection -fcf-protection \
-			-Wp,-D_FORTIFY_SOURCE=2,-D_GLIBCXX_ASSERTIONS
+CXXFLAGS ?= -std=c++23 -march=x86-64 -O2 -flto=auto -ffat-lto-objects -s \
+			-fPIC -fstack-clash-protection -fcf-protection
+CPPFLAGS ?= -Wp,-D_FORTIFY_SOURCE=2,-D_GLIBCXX_ASSERTIONS
 LDFLAGS ?= -Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now
-LDLIBS ?= -lfmt
+LDLIBS ?= -lfmt -lstdc++
+
 PREFIX ?= /usr/local
+
+SOURCES := $(wildcard *.cpp)
+OBJECTS := $(SOURCES:.cpp=.o)
 
 all: printarg
 
-printarg.o: printarg.cpp
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $(LDFLAGS) -o $@ -c $^
-
-printarg: printarg.o
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $(LDFLAGS) -o $@ $^
+printarg: $(OBJECTS)
+$(OBJECTS): %o: %cpp
 
 install: printarg
-	install -Dm755 printarg $(PREFIX)/bin
+	install -Dm755 $^ $(PREFIX)/bin/$^
 
 .PHONY: clean
 clean:
-	rm -f printarg *.o
+	$(RM) printarg *.o
