@@ -13,8 +13,8 @@ inline bool has_env(char const *const name) {
 }
 
 int main(int argc, char** argv) {
-    if (argc == 1) {
-        fmt::println(stderr, "---- NO ARGS ----");
+    if (argc <= 1) {
+        fmt::println(stderr, "---- NO ARGS (argc={}) ----", argc);
         return 0;
     }
 
