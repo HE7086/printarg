@@ -1,5 +1,5 @@
 LTOFLAGS ?= -flto=auto -ffat-lto-objects 
-CXXFLAGS ?= -std=c++23 -march=x86-64 -O2 -s -fno-plt -pipe \
+CXXFLAGS ?= -std=c++23 -march=x86-64 -O2 -fno-plt -pipe \
 			-fPIC -fstack-clash-protection -fcf-protection \
 			-Wall -Wextra -Wpedantic -Werror \
 			$(LTOFLAGS)
@@ -19,7 +19,7 @@ $(OBJECTS): %o: %cpp
 
 .PHONY: install
 install: printarg
-	install -Dm755 $^ $(PREFIX)/bin/$^
+	install -s -Dm755 $^ $(PREFIX)/bin/$^
 	ln -sf $^ $(PREFIX)/bin/$^_hex
 
 .PHONY: clean
